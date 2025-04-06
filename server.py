@@ -15,7 +15,7 @@ def argument_parser():
     ip = ''
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", type = int , help="Port to listen on ")
-    parser.add_argument("-ip", "--ip", type = int , help="IP address to listen on ")
+    parser.add_argument("-ip", "--ip", type = str , help="IP address to listen on ")
     args = parser.parse_args()
     if(args.port):
         port = args.port
@@ -69,8 +69,17 @@ def listen(sk):
         exit(0)
 
 def runCommand(command):
-    output = subprocess.getoutput(command)
-    return output
+    allowed_commands = ['ls']
+
+    parts = command.strip().split()
+    if not parts or parts[0] not in allowed_commands:
+        return f"Error: Command '{parts[0] if parts else ''}' is not allowed."
+
+    try:
+        output = subprocess.getoutput(command)
+        return output
+    except Exception as e:
+        return f"Error executing command: {str(e)}"
 
 def main():
     addr = argument_parser()
